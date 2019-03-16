@@ -1,5 +1,5 @@
 class Sine extends Shape{
-  Sine(int divs, int h, int w, int amp, int freq){
+  Sine(int divs, int h, int w, int amp){
     hue = h;
     for (int i = 0; i < divs; i++){
       float t = 1.0*i/divs;

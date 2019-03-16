@@ -3,7 +3,7 @@ class Line extends Shape{
     hue = h;
     for (int i = 0; i < divs; i++){
       float t = 1.0*i/divs;
-      vertices.add(weightedMidpoint(s,e,t));
+      vertices.add(lineMidpoint(s,e,t));
     }
   }
 }
