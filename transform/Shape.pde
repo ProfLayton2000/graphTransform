@@ -1,19 +1,29 @@
 class Shape{
   int divs;        //Number of divisions, higher = more resolution
   int hue;
+  float alpha = 0;
   
   ArrayList<PVector> vertices = new ArrayList<PVector>();
   
-  void show(float t,int scale){
+  void show(int scale, float newAlpha){
     strokeWeight(1);
     colorMode(HSB);
-    stroke(map(t,0.0,1.0,150,300),255,255);
+    stroke(hue,255,255);
+    
+    alpha = newAlpha;
+    
     beginShape();
-    noFill();
+    fill(hue,255,255,alpha);
     for (PVector v : vertices){
       vertex(v.x*scale,v.y*scale);
     }
-    endShape();
+    
+    if (alpha == 0){
+      endShape();
+    } else{
+      endShape(CLOSE);
+    }
+    
   }
   
   PVector getKthVertex(int k){
@@ -22,6 +32,10 @@ class Shape{
   
   int getHue(){
     return hue;
+  }
+  
+  float getAlpha(){
+    return alpha;
   }
   
 }

@@ -1,18 +1,17 @@
-int save = 1;
+int save = 0;
 
 int frame = 0;
-int totalFrames = 150;
 
-int res = 8000;
+int res = 100;
 int scale = 50; //100 pixels is 1 unit
-int bound = 10;
+int bound = 20;
 
 ArrayList<Line> horizontals = new ArrayList<Line>();
 ArrayList<Line> verticals = new ArrayList<Line>();
 //ArrayList<Circle> circles = new ArrayList<Circle>();
 
 void setup(){
-  size(1920,1080);
+  size(1400,800);
   //frameRate(120);
   int nX = ceil(width/(2*scale)) + 2;
   bound = ceil(height/scale) + 2;
@@ -32,38 +31,68 @@ void setup(){
   
 }
 
-//Line   l1 = new 
+//Line   l1 = new Line(res,180, new PVector(-bound,0), new PVector(bound,0));
+Line   l1 = new Line(res,100, new PVector(0,1), new PVector(1,0));
+Line   l2 = new Line(res,180, new PVector(1,0), new PVector(2,1));
+Line   l3 = new Line(res,180, new PVector(2,1), new PVector(1,2));
+Line   l4 = new Line(res,180, new PVector(1,2), new PVector(0,1));
+ 
+//Circle l2 = new Circle(res, 150, new PVector (4,3), 1, true);
 
-//Sine   l2 = new Sine(res, 100, 1, 1);
-Circle l3 = new Circle(res, 200, 2);
-//Sine   l4 = new Sine(res, 150, 14, 1, 50);
+int[] sceneTimes = {1,100};
+int sceneNo = 0;
+int sceneLength = 0;
+int sceneStart = 0;
 
 void draw(){
-  if (frame > totalFrames){
+  if (frame > sceneTimes[sceneTimes.length - 1]){
+    println("Finished");
     noLoop();
     if (save == 1) exit();
+    return;
   }
-  background(0);
+  
+  if (frame > sceneTimes[sceneNo]){
+    sceneNo++;
+    println("New scene");
+    sceneLength = sceneTimes[sceneNo] - sceneTimes[sceneNo-1];
+    sceneStart = sceneTimes[sceneNo-1];
+  }
+  
   translate(width/2,height/2);
   scale(1,-1); //flip x and y graphs to normal
   
-  backGraph(scale,1);
+  //backGraph(scale,1);
   
-  float t = (1.0*frame)/(1.0*totalFrames);
+  float t = (1.0*(frame-sceneStart)/(1.0*sceneLength));
   t = doubleCubicEasing(t,1);
   
-  for (Line l: horizontals){
-    showMidFormulaLine(res,t,l,scale);
+  
+  //Figure out scene number
+  if (sceneNo == 1){
+    background(0);
+    backGraph(scale, 1);
+    
+    for (Line l: horizontals){
+      showMidFormulaLine(res,t,l,scale);
+    }
+    
+    for (Line l: verticals){
+      showMidFormulaLine(res,t,l,scale);
+    }
+    
+    showMidFormulaLine(res,t,l1,scale);
+    showMidFormulaLine(res,t,l2,scale);
+    showMidFormulaLine(res,t,l3,scale);
+    showMidFormulaLine(res,t,l4,scale);
+    //showMidgraph(res,t,l2,l1,scale);
+    //l3.show(scale,255);
+    //l2.show(scale,0);
+    
   }
   
-  for (Line l: verticals){
-    showMidFormulaLine(res,t,l,scale);
-  }
   
-  //for (Circle l: circles){
-  //  showMidFormulaLine(res,t,l,scale);
-  //}
-  
-  if (save == 1) saveFrame("output/rawOutput/z^3/z^3_####.png");
+  if (save == 1) saveFrame("output/rawOutput/q134/q134_####.png");
+  println("Done frame "+str(frame));
   frame++;
 }

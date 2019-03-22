@@ -17,12 +17,14 @@ float angle(PVector p){
 }
 
 PVector circleMidpoint(PVector s, PVector e, float t){
-  PVector p1 = new PVector (dist(s.x,s.y,0,0),angle(s));
-  PVector p2 = new PVector (dist(e.x,e.y,0,0),angle(e));
+  //float dTheta = PVector.angleBetween(s,e);
+  float theta = map(t,0.0,1.0,angle(s),angle(e));
+  //theta += angle(s);
   
-  PVector nP = lineMidpoint(p1,p2,t);
-  float nX = nP.x * cos(nP.y);
-  float nY = nP.x * sin(nP.y);
+  float mag = map(t,0.0,1.0,s.mag(),e.mag());
+  
+  float nX = mag * cos(theta);
+  float nY = mag * sin(theta);
   
   return new PVector(nX,nY);
 }
@@ -32,13 +34,15 @@ float doubleCubicEasing(float t, float a){
 }
 
 PVector function(PVector p){
-  float nX = p.x*p.x*p.x - 3*p.x*p.y*p.y;
-  float nY = 3*p.x*p.x*p.y - p.y*p.y*p.y;
-  //float nX = p.y;
-  //float nY = p.x;
+  //if (p.x == 0 && p.y == 0){
+  //  return new PVector(0.0001,0.0001);
+  //}
+  float nX =  p.x + p.y;
+  float nY =  p.x - p.y;
   return new PVector(nX,nY);
 }
 
+//have option to change shape A permanently
 void showMidgraph(float divs, float t, Shape A, Shape B, int scale){
   beginShape();
   colorMode(HSB);
@@ -57,13 +61,21 @@ void showMidFormulaLine(float divs, float t, Shape A, int scale){
   beginShape();
   colorMode(HSB);
   stroke(A.getHue(),255,255);
-  strokeWeight(1);
-  noFill();
+  strokeWeight(3);
+  if (A.getAlpha() > 0){
+    fill(A.getHue(),255,255,200);
+  } else{
+    noFill();
+  }
   for (int i = 0; i < divs; i++){
     PVector newV = lineMidpoint(A.getKthVertex(i),function(A.getKthVertex(i)),t);
     vertex(newV.x*scale,newV.y*scale);
   }
-  endShape();
+  if (A.getAlpha() > 0){
+    endShape(CLOSE);
+  } else{
+    endShape();
+  }
 }
 
 void showMidFormulaCurve(float divs, float t, Shape A, int scale){
@@ -71,10 +83,27 @@ void showMidFormulaCurve(float divs, float t, Shape A, int scale){
   colorMode(HSB);
   stroke(A.getHue(),255,255);
   strokeWeight(1);
-  noFill();
+  if (A.getAlpha() > 0){
+    fill(A.getHue(),255,255,A.getAlpha());
+  } else{
+    noFill();
+  }
   for (int i = 0; i < divs; i++){
     PVector newV = circleMidpoint(A.getKthVertex(i),function(A.getKthVertex(i)),t);
     vertex(newV.x*scale,newV.y*scale);
   }
   endShape();
+  if (A.getAlpha() > 0){
+    endShape(CLOSE);
+  } else{
+    endShape();
+  }
+}
+
+void fadeIn(float t, int scale, Shape A){
+  A.show(scale, map(t,0.0,1.0,0,255));
+}
+
+void fadeOut(float t, int scale, Shape A){
+  A.show(scale, map(t,0.0,1.0,255,0));
 }
